@@ -1,4 +1,7 @@
 package com.tgg;
+import com.tgg.tests.Tester;
+import org.junit.Test;
+
 import java.lang.String;
 
 /*
@@ -31,7 +34,8 @@ There are various clues of different forms:
     A and B can be either: position, ingredient, or category
 
   The algorithm for solving is
-  1) Randomly add clues, try to solve and keep iterating until a single unique solution exists
+  1) Generate a target solution
+  1) Randomly add a clue which is satisfied by the target solution.  Try to solve and keep iterating (adding clues) until a single unique solution exists
   2) Attempt to remove redundant clues
 
 variables:
@@ -64,8 +68,10 @@ class is Clue
 public class Main {
 
     public static void main(String[] args) {
-	    System.out.println("hello world");
-	    Partition partition = new Partition();
-	    partition.main(args);
+      boolean allTestsSucceeded;
+
+      allTestsSucceeded = Tester.testSolution();
+      allTestsSucceeded = allTestsSucceeded && Tester.testCluePosition();
+      allTestsSucceeded = allTestsSucceeded && Tester.testPuzzle();
     }
 }
