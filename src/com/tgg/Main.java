@@ -13,6 +13,8 @@ Basic structure:
 3) There is a large pool of ingredients, each ingredient has two characteristics:
    a) A Name: Mushroom, Honey, Flower, Dragonfruit, etc.  All ingredients have a name
    b) Descriptors: one or more descriptors such as Red, White, Black, Fruit, Liquid, Plant, etc
+   Descriptors are grouped into mutually exclusive sets (eg Colour, TypeOfObject, etc) and the type of descriptor:
+     adjective (eg red), noun (eg berry)
 
 There are various clues of different forms:
   1) positional (order of addition):
@@ -22,7 +24,7 @@ There are various clues of different forms:
       'ends': name or descriptor is either first or last
       'before': name or descriptor is before name or descriptor
 
-  2) the number of ingredients in a particular category
+  2) the number of ingredients in a particular category of descriptor
     '=': number of ingredient in category A equals number in category B
     '!=': number of ingredient in category A does not equal number in category B
     '<': number of ingredient in category A is less than number in category B
@@ -56,7 +58,12 @@ Later: Randomise order of testing
 
 class is Clue
 
-
+The 4th ingredient is red
+The 4th ingredient is a flower
+The red ingredient is next to the blue ingredient
+A/The red ingredient is next to a berry
+There are x red ingredients
+The 4th ingredient is in a jar
 
 
 

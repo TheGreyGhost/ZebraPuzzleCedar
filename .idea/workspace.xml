@@ -2,14 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d153525a-9147-43c0-a537-2cbe6b8c4375" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/com/tgg/ClueFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/tgg/CluePosition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/tgg/Ingredient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/tgg/Puzzle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/tgg/Solution.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/tgg/tests/Tester.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/tgg/Descriptor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/tgg/Clue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/tgg/Clue.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/tgg/Ingredient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/tgg/Ingredient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/tgg/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/tgg/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -48,9 +44,14 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.22002551" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.tgg" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration default="true" type="Applet" factoryName="Applet">
@@ -123,6 +124,7 @@
       <workItem from="1761890983946" duration="4477000" />
       <workItem from="1761952979745" duration="6511000" />
       <workItem from="1762162968182" duration="10818000" />
+      <workItem from="1764587931840" duration="4339000" />
     </task>
     <servers />
   </component>
@@ -130,10 +132,14 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="414" y="234" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1761827441952">
+    <state x="552" y="237" width="1240" height="677" key="#Project_Structure" timestamp="1764590901802">
       <screen x="0" y="0" width="1920" height="1152" />
     </state>
-    <state x="414" y="234" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1152@0.0.1920.1152" timestamp="1761827441952" />
+    <state x="552" y="237" width="1240" height="677" key="#Project_Structure/0.0.1920.1152@0.0.1920.1152" timestamp="1764590901802" />
+    <state x="414" y="234" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1764590867525">
+      <screen x="0" y="0" width="1920" height="1152" />
+    </state>
+    <state x="414" y="234" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1152@0.0.1920.1152" timestamp="1764590867525" />
     <state x="765" y="285" key="#com.intellij.ide.util.MemberChooser" timestamp="1761981526368">
       <screen x="0" y="0" width="1920" height="1152" />
     </state>
@@ -194,14 +200,18 @@
       <screen x="0" y="0" width="1920" height="1152" />
     </state>
     <state x="440" y="153" key="SettingsEditor/0.0.1920.1152@0.0.1920.1152" timestamp="1761827315157" />
-    <state x="667" y="403" key="com.intellij.ide.util.TipDialog" timestamp="1762162972779">
+    <state x="667" y="403" key="com.intellij.ide.util.TipDialog" timestamp="1764587933017">
       <screen x="0" y="0" width="1920" height="1152" />
     </state>
-    <state x="667" y="403" key="com.intellij.ide.util.TipDialog/0.0.1920.1152@0.0.1920.1152" timestamp="1762162972779" />
+    <state x="667" y="403" key="com.intellij.ide.util.TipDialog/0.0.1920.1152@0.0.1920.1152" timestamp="1764587933017" />
     <state x="664" y="477" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1761827266412">
       <screen x="0" y="0" width="1920" height="1152" />
     </state>
     <state x="664" y="477" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD/0.0.1920.1152@0.0.1920.1152" timestamp="1761827266412" />
+    <state x="623" y="253" width="672" height="678" key="search.everywhere.popup" timestamp="1764589572093">
+      <screen x="0" y="0" width="1920" height="1152" />
+    </state>
+    <state x="623" y="253" width="672" height="678" key="search.everywhere.popup/0.0.1920.1152@0.0.1920.1152" timestamp="1764589572093" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
