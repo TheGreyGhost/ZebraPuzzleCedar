@@ -9,61 +9,148 @@ import java.util.Vector;
 public class CluePosition implements Clue {
 
   /*
-   *   1) positional (order of addition):
+   *   positional (order of addition):
           IN_POSITION_X: name or descriptor is position X
  *        NOT_IN_POSITION_X: name or descriptor is not position X
  *        IMMEDIATELY_BEFORE_OR_AFTER_INGREDIENT_B: name or descriptor is next to name or descriptor
  *        FIRST_OR_LAST: name or descriptor is either first or last
  *        BEFORE_INGREDIENT_B: name or descriptor is before name or descriptor
+ *        TWO_NEXT_TO_EACH_OTHER
+ *        TWO_NOT_NEXT_TO_EACH_OTHER
   */
 
   @Override
   public boolean hasConflicts(Solution solution) {
     switch (m_clueType) {
-      case IN_POSITION_X:
-        return (solution.getIngredient(m_position) != m_ingredientA);
+      case IN_POSITION_X: {
+        if (!m_ingredientInformationA.matches(solution.getIngredient(m_position))) return true;
+        if (m_ingredientInformationA.doesNotSatisfyPlurality(solution)) return true;
+        return false;
+      }
 
-      case NOT_IN_POSITION_X:
-        return (solution.getIngredient(m_position) == m_ingredientA);
+      case NOT_IN_POSITION_X: {
+        if (m_ingredientInformationA.matches(solution.getIngredient(m_position))) return true;
+        if (m_ingredientInformationA.doesNotSatisfyPlurality(solution)) return true;
+        return false;
+      }
 
       case BEFORE_INGREDIENT_B: {
-        int posA = solution.findIngredientPosition(m_ingredientA);
-        int posB = solution.findIngredientPosition(m_ingredientB);
+        if (m_ingredientInformationA.doesNotSatisfyPlurality(solution)) return true;
+        if (m_ingredientInformationB.doesNotSatisfyPlurality(solution)) return true;
+
+        int posA = solution.findFirstMatchingIngredientPosition(m_ingredientInformationA);
+        int posB = solution.findLastMatchingIngredientPosition(m_ingredientInformationB);
         return (posA < 0 || posB < 0 || posA >= posB);
       }
+
       case IMMEDIATELY_BEFORE_OR_AFTER_INGREDIENT_B: {
-        int posB = solution.findIngredientPosition(m_ingredientB);
-        if (posB < 0 ) return true;
-        if (posB >= 1 && solution.getIngredient(posB - 1) == m_ingredientA) return false;
-        if (posB < solution.getIngredientsCount() - 1 && solution.getIngredient(posB + 1) == m_ingredientA) return false;
+        int posB = solution.findFirstMatchingIngredientPosition(m_ingredientInformationB);
+        while (posB >= 0 ) {
+          if (posB >= 1 && m_ingredientInformationA.matches(solution.getIngredient(posB - 1))) return false;
+          if (posB < solution.getIngredientsCount() - 1 &&
+                     m_ingredientInformationB.matches(solution.getIngredient(posB + 1))
+             )
+            return false;
+          posB = solution.findNextMatchingIngredientPosition(m_ingredientInformationB, posB);
+        }
         return true;
       }
-      case FIRST_OR_LAST:
-        if (solution.getIngredient(0) == m_ingredientA) return false;
-        if (solution.getIngredient(solution.getIngredientsCount() - 1) == m_ingredientA) return false;
+
+      case FIRST_OR_LAST: {
+        if (m_ingredientInformationA.matches(solution.getIngredient(0))) return false;
+        if (m_ingredientInformationA.matches(solution.getIngredient(solution.getIngredientsCount() - 1))) return false;
         return true;
+      }
+
+      case TWO_NEXT_TO_EACH_OTHER: {
+        int posA = solution.findFirstMatchingIngredientPosition(m_ingredientInformationA);
+        int lastPosToCheck = solution.getIngredientsCount() - 2;
+        while (posA >= 0 && posA <= lastPosToCheck) {
+          if (m_ingredientInformationA.matches(solution.getIngredient(posA + 1))) return false;
+          posA = solution.findNextMatchingIngredientPosition(m_ingredientInformationA, posA);
+        }
+        return true;
+      }
+
+      case TWO_NOT_NEXT_TO_EACH_OTHER: {
+        int posA = solution.findFirstMatchingIngredientPosition(m_ingredientInformationA);
+        int lastPosToCheck = solution.getIngredientsCount() - 2;
+        while (posA >= 0 && posA <= lastPosToCheck) {
+          if (m_ingredientInformationA.matches(solution.getIngredient(posA + 1))) return true;
+          posA = solution.findNextMatchingIngredientPosition(m_ingredientInformationA, posA);
+        }
+        return false;
+      }
+
       default:
         throw new IllegalStateException();
     }
   }
   /**
    * Generate a new random positional clue based on the provided solution
-   * @param mustBeSatisfied  clue will be satisfied by the solution (newclue.hasConflicts(solution) will return false)
+   * @param mustBeSatisfied if true, then the clue will be satisfied by the solution (newclue.hasConflicts(solution) will return false)
    * @return
    */
   public static CluePosition generateRandomClue(Solution solution, boolean mustBeSatisfied) {
     CluePosition retval;
     ClueType clueType = ClueType.getRandomClueType();
+    int clueTypeResetCounter = 0;
+    final int FAILED_ATTEMPTS_BEFORE_CLUE_TYPE_RESET = 10;
     do {
+      if (++clueTypeResetCounter >= FAILED_ATTEMPTS_BEFORE_CLUE_TYPE_RESET) {
+        clueType = ClueType.getRandomClueType();
+        clueTypeResetCounter = 0;
+      }
+
       int numberOfPositions = solution.getIngredientsCount();
       int posA = s_random.nextInt(numberOfPositions);
       int posB = s_random.nextInt(numberOfPositions);
       if (posB == posA) posB = (posB + 1) % numberOfPositions;
+
+      // fix positions to match the clue types if necessary
+      if (clueType == ClueType.IMMEDIATELY_BEFORE_OR_AFTER_INGREDIENT_B) {
+        if (posA == 0) {
+          posB = 1;
+        } else if (posA == numberOfPositions-1) {
+          posB = posA - 1;
+        } else {
+          posB = posA + (s_random.nextBoolean() ? 1 : -1);
+        }
+      }
+      if (clueType == ClueType.BEFORE_INGREDIENT_B) {
+        if (posA > posB) {
+          int temp = posA;
+          posA = posB;
+          posB = temp;
+        }
+      }
+
       Ingredient ingredientA = solution.getIngredient(posA);
       Ingredient ingredientB = solution.getIngredient(posB);
       int position = s_random.nextInt(numberOfPositions);
 
-      retval = new CluePosition(clueType, ingredientA, ingredientB, position);
+      ClueIngredientInformation clueIngredientInformationA =
+              ClueIngredientInformation.generateRandomIngredientInformation(ingredientA, solution);
+      ClueIngredientInformation clueIngredientInformationB =
+              ClueIngredientInformation.generateRandomIngredientInformation(ingredientB, solution);
+
+      ClueType finalClueType = clueType;
+      // might need to convert this clue to a different type
+      if (clueType == ClueType.IMMEDIATELY_BEFORE_OR_AFTER_INGREDIENT_B) {   // convert to two adjacent
+        if (clueIngredientInformationA.isEquivalentWhenMatching(clueIngredientInformationB)) {
+          finalClueType = ClueType.TWO_NEXT_TO_EACH_OTHER;
+        }
+      } else if (clueType == ClueType.BEFORE_INGREDIENT_B) { // convert to "two non-adjacent" or "adjacent" as appropriate
+        if (clueIngredientInformationA.isEquivalentWhenMatching(clueIngredientInformationB)) {
+          if (posA == posB - 1 || posA == posB +1 ) {
+            finalClueType = ClueType.TWO_NEXT_TO_EACH_OTHER;
+          } else {
+            finalClueType = ClueType.TWO_NOT_NEXT_TO_EACH_OTHER;
+          }
+        }
+      }
+
+      retval = new CluePosition(clueType, clueIngredientInformationA, clueIngredientInformationB, position);
     } while (mustBeSatisfied && retval.hasConflicts(solution));
     return retval;
   }
@@ -78,14 +165,14 @@ public class CluePosition implements Clue {
         builder.append("The ");
         builder.append(m_ingredientA);
         builder.append(" is the ");
-        builder.append(ordinal(m_position + 1));
+        builder.append(NumberToWords.ordinal(m_position + 1));
         builder.append(" ingredient added.");
         break;
       case NOT_IN_POSITION_X:
         builder.append("The ");
         builder.append(m_ingredientA);
         builder.append(" is not the ");
-        builder.append(ordinal(m_position + 1));
+        builder.append(NumberToWords.ordinal(m_position + 1));
         builder.append(" ingredient added.");
         break;
 
@@ -115,36 +202,24 @@ public class CluePosition implements Clue {
     return builder.toString();
   }
 
-  /**
-   * Convert a number to a human-readable ordinal (first, second, third etc)
-   * @param i
-   * @return the ordinal name (first, second, third etc)
-   */
-  private static String ordinal(int i) {
-    String[] suffixes = new String[] { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
-    switch (i % 100) {
-      case 11:
-      case 12:
-      case 13:
-        return i + "th";
-      default:
-        return i + suffixes[i % 10];
-    }
-  }
-
-  private CluePosition(ClueType clueType, Ingredient ingredientA, Ingredient ingredientB, int position) {
+  private CluePosition(ClueType clueType,
+                       ClueIngredientInformation clueIngredientInformationA,
+                       ClueIngredientInformation clueIngredientInformationB, int position) {
     m_clueType = clueType;
-    m_ingredientA = ingredientA;
-    m_ingredientB = ingredientB;
+    m_ingredientInformationA = clueIngredientInformationA;
+    m_ingredientInformationB = clueIngredientInformationB;
     m_position = position;
   }
 
   private enum ClueType {
-    IN_POSITION_X(1),
-    NOT_IN_POSITION_X(1),
-    IMMEDIATELY_BEFORE_OR_AFTER_INGREDIENT_B(1),
-    FIRST_OR_LAST(1),
-    BEFORE_INGREDIENT_B(1);
+    IN_POSITION_X(Setting.CLUE_TYPE_WEIGHT_IN_POSITION_X),
+    NOT_IN_POSITION_X(Setting.CLUE_TYPE_WEIGHT_NOT_IN_POSITION_X),
+    IMMEDIATELY_BEFORE_OR_AFTER_INGREDIENT_B(Setting.CLUE_TYPE_WEIGHT_IMMEDIATELY_BEFORE_OR_AFTER_INGREDIENT_B),
+    TWO_NEXT_TO_EACH_OTHER(Setting.CLUE_TYPE_WEIGHT_TWO_NEXT_TO_EACH_OTHER),   // subset of IMMEDIATELY_BEFORE_OR_AFTER_INGREDIENT_B
+    FIRST_OR_LAST(Setting.CLUE_TYPE_WEIGHT_FIRST_OR_LAST),
+    BEFORE_INGREDIENT_B(Setting.CLUE_TYPE_WEIGHT_BEFORE_INGREDIENT_B),
+    TWO_NOT_NEXT_TO_EACH_OTHER(Setting.CLUE_TYPE_WEIGHT_TWO_NOT_NEXT_TO_EACH_OTHER),   // subset of BEFORE_INGREDIENT_B
+    ;
 
     public static ClueType getRandomClueType() {
       setupWeightsLookupTable();
@@ -163,15 +238,18 @@ public class CluePosition implements Clue {
       }
     }
 
-    private ClueType(int weight) { m_weight = weight; }
+    private ClueType(Setting setting) { m_weight = setting.getWeight(); }
     private int m_weight;
     private static Vector<ClueType> m_weightstable;
   }
 
   private ClueType m_clueType;
-  private Ingredient m_ingredientA;
-  // plus either of the following two:
-  private Ingredient m_ingredientB;
+
+  private ClueIngredientInformation m_ingredientInformationA;
+  // plus either of the following two groupings:
+  private ClueIngredientInformation m_ingredientInformationB;
+  // or
   private int m_position;  // 0, 1, 2 etc
+
   private static Random s_random = new Random();
 }

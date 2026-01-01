@@ -1,20 +1,18 @@
 package com.tgg;
 
-import java.util.Random;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 
 /**
  * Created by TGG on 31/10/2025.
  */
 public enum Ingredient {
-  WHITE_BERRY("White Berry", "White Berries", Set.of(Descriptor.MUSHROOM, Descriptor.WHITE)),
-  RED_BERRY("Red Berry", "Red Berries", Set.of(Descriptor.MUSHROOM, Descriptor.RED)),
-  BROWN_BERRY("Brown Berry", "Brown Berries", Set.of(Descriptor.MUSHROOM, Descriptor.BROWN)),
-  YELLOW_BERRY("Yellow Berry", "Yellow Berries", Set.of(Descriptor.MUSHROOM, Descriptor.YELLOW)),
-  GREEN_BERRY("Green Berry", "Green Berries", Set.of(Descriptor.MUSHROOM, Descriptor.GREEN)),
-  BLUE_BERRY("Green Berry", "Green Berries", Set.of(Descriptor.MUSHROOM, Descriptor.GREEN)),
+  WHITE_BERRY("White Berry", "White Berries", Set.of(Descriptor.BERRY, Descriptor.WHITE)),
+  RED_BERRY("Red Berry", "Red Berries", Set.of(Descriptor.BERRY, Descriptor.RED)),
+  BROWN_BERRY("Brown Berry", "Brown Berries", Set.of(Descriptor.BERRY, Descriptor.BROWN)),
+  YELLOW_BERRY("Yellow Berry", "Yellow Berries", Set.of(Descriptor.BERRY, Descriptor.YELLOW)),
+  GREEN_BERRY("Green Berry", "Green Berries", Set.of(Descriptor.BERRY, Descriptor.GREEN)),
+  BLUE_BERRY("Blue Berry", "Blue Berries", Set.of(Descriptor.BERRY, Descriptor.BLUE)),
   WHITE_MUSHROOM("White Mushroom", "White Mushrooms", Set.of(Descriptor.MUSHROOM, Descriptor.WHITE)),
   RED_MUSHROOM("Red Mushroom", "Red Mushrooms", Set.of(Descriptor.MUSHROOM, Descriptor.RED)),
   BROWN_MUSHROOM("Brown Mushroom", "Brown Mushrooms", Set.of(Descriptor.MUSHROOM, Descriptor.BROWN)),
@@ -57,8 +55,6 @@ public enum Ingredient {
     return m_readableName;
   }
 
-
-
   /**
    * Returns true if this ingredient has the given descriptor
    * @param descriptorToMatch the descriptor to check for
@@ -66,6 +62,14 @@ public enum Ingredient {
    */
   public boolean hasDescriptor(Descriptor descriptorToMatch) {
      return m_descriptors.contains(descriptorToMatch);
+  }
+
+  public Descriptor getRandomDescriptor() {
+    int i = s_random.nextInt(m_descriptors.size());
+    for (Descriptor descriptor : m_descriptors) {
+      if (--i < 0) return descriptor;
+    }
+    throw new AssertionError("Did something wrong...");
   }
 
   public static void setSeedForTesting(int seed) {s_random = new Random(seed);}
@@ -90,6 +94,7 @@ public enum Ingredient {
   private Ingredient(String readableName, String readableNamePlural, Set<Descriptor> descriptors) {
     m_readableName = readableName;
     m_readableNamePlural = readableNamePlural;
+    if (Descriptor.checkForMutexViolations(descriptors)) throw new AssertionError("Invalid Mutex set");
     m_descriptors = descriptors;
   }
 

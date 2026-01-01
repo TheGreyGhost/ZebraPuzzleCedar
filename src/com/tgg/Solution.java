@@ -1,7 +1,5 @@
 package com.tgg;
 
-import org.chocosolver.solver.constraints.nary.nvalue.amnv.rules.R;
-
 import java.util.Random;
 import java.util.Vector;
 
@@ -64,6 +62,79 @@ public class Solution {
     return -1;
   }
 
+//  /**
+//   * Find the position of the first matching ingredient
+//   * @param descriptor descriptor to match
+//   * @return position of the first matching ingredient 0 = added first, 1 = added second, etc.  -1 = not in Solution
+//   */
+//  public int findFirstMatchingIngredientPosition(Descriptor descriptor) {
+//    int retval = 0;
+//    for (Ingredient ingredient : m_ingredientsAdditionOrder) {
+//      if (ingredient.hasDescriptor(descriptor)) return retval;
+//      ++retval;
+//    }
+//    return -1;
+//  }
+//
+//  /**
+//   * Find the position of the last matching ingredient
+//   * @param descriptor descriptor to match
+//   * @return position of the last matching ingredient 0 = added first, 1 = added second, etc.  -1 = not in Solution
+//   */
+//  public int findLastMatchingIngredientPosition(Descriptor descriptor) {
+//    int retval = m_ingredientsAdditionOrder.size();
+//    while (retval > 0) {
+//      if (m_ingredientsAdditionOrder.get(retval).hasDescriptor(descriptor)) return retval;
+//      --retval;
+//    }
+//    return -1;
+//  }
+
+  /**
+   * Find the position of the first ingredient which matches the clue information
+   * @param cii the ClueIngredientInformation that the ingredient must match
+   * @return position of the first matching ingredient 0 = added first, 1 = added second, etc.  -1 = not in Solution
+   */
+  public int findFirstMatchingIngredientPosition(ClueIngredientInformation cii) {
+    int retval = 0;
+    for (Ingredient ingredient : m_ingredientsAdditionOrder) {
+      if (cii.matches(ingredient)) return retval;
+      ++retval;
+    }
+    return -1;
+  }
+
+  /**
+   * Find the position of the last ingredient which matches the clue information
+   * @param cii the ClueIngredientInformation that the ingredient must match
+   * @return position of the last matching ingredient 0 = added first, 1 = added second, etc.  -1 = not in Solution
+   */
+  public int findLastMatchingIngredientPosition(ClueIngredientInformation cii) {
+    int retval = m_ingredientsAdditionOrder.size();
+    while (retval > 0) {
+      if (cii.matches(m_ingredientsAdditionOrder.get(retval))) return retval;
+      --retval;
+    }
+    return -1;
+  }
+
+  /**
+   * Given the position of a matching ingredient, find the position of the next ingredient which matches the clue information
+   * @param cii the ClueIngredientInformation that the ingredient must match
+   * @return position of the next matching ingredient 0 = added first, 1 = added second, etc.  -1 = no more matches in Solution
+   */
+  public int findNextMatchingIngredientPosition(ClueIngredientInformation cii, int previousPositionFound) {
+    if (!cii.matches(m_ingredientsAdditionOrder.get(previousPositionFound))) {
+      throw new IllegalArgumentException("previousPositionFound incorrect");
+    }
+    int retval = previousPositionFound+1;
+    while (retval < m_ingredientsAdditionOrder.size()) {
+      if (cii.matches(m_ingredientsAdditionOrder.get(retval))) return retval;
+      ++retval;
+    }
+    return -1;
+  }
+
   public int getIngredientsCount() { return m_numberOfIngredients;}
 
   public void addNextIngredient(Ingredient ingredient, int quantity) {
@@ -102,6 +173,20 @@ public class Solution {
     }
     return retval;
   }
+
+  /**
+   * Return the number of ingredients which match the given descriptor
+   * @param descriptor
+   * @return the number of ingredients which have a matching descriptor
+   */
+  public int getCountOfIngredientsWhichMatch(Descriptor descriptor) {
+    int retval = 0;
+    for (Ingredient ingredient : m_ingredientsAdditionOrder) {
+      if (ingredient.hasDescriptor(descriptor)) ++retval;
+    }
+    return retval;
+  }
+
 
   public static void setSeedForTesting(int seed) {s_random = new Random(seed);}
 

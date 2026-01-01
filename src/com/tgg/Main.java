@@ -5,7 +5,7 @@ import org.junit.Test;
 import java.lang.String;
 
 /*
-Generate a zebra puzzle for Alycia's game
+Generate a zebra puzzle for Cedar's game
 
 Basic structure:
 1) Up to 'N' ingredients needed to be added in order
